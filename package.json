@@ -15,7 +15,8 @@
   "scripts": {
     "build": "babel src -d dist",
     "build-web": "browserify dist/index.js --standalone ShapeBuilder  --outfile  dist/index.min.js",
-    "build-all": "run-s build build-web"
+    "build-all": "run-s build build-web",
+    "test": "echo \"No test specified\""
   },
   "devDependencies": {
     "babel": "^6.23.0",
