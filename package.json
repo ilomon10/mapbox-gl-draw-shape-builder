@@ -1,6 +1,6 @@
 {
   "name": "mapbox-gl-draw-shape-builder",
-  "version": "0.0.0",
+  "version": "0.0.1-0",
   "description": "A custom mode for MapboxGL Draw",
   "main": "dist/index.js",
   "author": "Imanuel Pundoko",
