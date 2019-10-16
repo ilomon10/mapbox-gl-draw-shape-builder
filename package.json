@@ -1,0 +1,38 @@
+{
+  "name": "mapbox-gl-draw-shape-builder",
+  "version": "0.0.0",
+  "description": "A custom mode for MapboxGL Draw",
+  "main": "dist/index.js",
+  "author": "Imanuel Pundoko",
+  "license": "MIT",
+  "repository": "https://github.com/ilomon10/mapbox-gl-draw-shape-builder",
+  "keywords": [
+    "MapBox GL",
+    "Mapbox-gl-Draw",
+    "Custom mode",
+    "Vector Tiles"
+  ],
+  "scripts": {
+    "build": "babel src -d dist",
+    "build-web": "browserify dist/index.js --standalone ShapeBuilder  --outfile  dist/index.min.js",
+    "build-all": "run-s build build-web"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.25.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babelify": "^8.0.0",
+    "npm-run-all": "^4.1.2"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.6.0",
+    "@mapbox/geojson-rewind": "^0.4.0",
+    "@turf/turf": "^5.1.6",
+    "browserify": "^16.5.0",
+    "geojson-validation": "^0.2.1",
+    "lodash": "^4.17.15"
+  }
+}

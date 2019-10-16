@@ -1,0 +1,14 @@
+{
+  "version": 8,
+  "name": "Empty",
+  "metadata": {"mapbox:autocomposite": true},
+  "sources": {},
+  "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {"background-color": "rgba(0,0,0,0)"}
+    }
+  ]
+}
