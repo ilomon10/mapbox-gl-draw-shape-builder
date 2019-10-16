@@ -33,6 +33,7 @@
     "@turf/turf": "^5.1.6",
     "browserify": "^16.5.0",
     "geojson-validation": "^0.2.1",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "np": "^5.1.1"
   }
 }
