@@ -1,8 +1,12 @@
 ## Mapbox GL Draw Shape Builder
 This is a custom mode for (Mapbox GL Draw) [https://github.com/mapbox/mapbox-gl-draw] that adds the functionality to build new shape from selected shape.
 
+[![npm version](https://badge.fury.io/js/mapbox-gl-draw-shape-builder.svg)](https://badge.fury.io/js/mapbox-gl-draw-shape-builder)
+
 ### Install
-`npm install` <del>mapbox-gl-draw-shape-builder</del>  not avaiable at moment
+```bash
+npm install mapbox-gl-draw-shape-builder@next
+```
 
 ### Usage
 ```js
