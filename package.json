@@ -1,0 +1,67 @@
+{
+  "name": "mapbox-gl-draw-shape-builder",
+  "version": "0.0.1-1",
+  "description": "A custom mode for MapboxGL Draw",
+  "main": "lib/shape-builder.js",
+  "files": [
+    "src/",
+    "dist/",
+    "lib/"
+  ],
+  "scripts": {
+    "OLDtest": "cross-env NODE_ENV=test mocha --require @babel/register --colors ./test/*.spec.js",
+    "test": "echo \"No test specified\"",
+    "coverage": "nyc --reporter=text --reporter=lcov npm test",
+    "lint": "eslint src/**/*.js",
+    "build:umdmin": "webpack --mode=production --output-library-target=umd",
+    "build:umd": "webpack --mode=development --output-library-target=umd",
+    "build:commonjs": "webpack --mode=development --output-library-target=commonjs2",
+    "build": "npm-run-all build:*",
+    "dev:umd": "webpack --progress --colors --watch --mode=development --output-library-target=umd",
+    "dev:commonjs": "webpack --progress --colors --watch --mode=development --output-library-target=commonjs2",
+    "dev": "npm-run-all --parallel dev:*",
+    "clean": "rimraf dist lib coverage",
+    "prepare": "npm-run-all clean lint test build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ilomon10/mapbox-gl-draw-shape-builder.git"
+  },
+  "keywords": [
+    "MapBox GL",
+    "Mapbox-gl-Draw",
+    "Custom mode",
+    "Vector Tiles"
+  ],
+  "author": "Imanuel Pundoko <ilomon10@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ilomon10/mapbox-gl-draw-shape-builder/issues"
+  },
+  "homepage": "https://github.com/ilomon10/mapbox-gl-draw-shape-builder#readme",
+  "devDependencies": {
+    "@babel/core": "~7.6.0",
+    "@babel/plugin-proposal-object-rest-spread": "~7.5.5",
+    "@babel/preset-env": "~7.6.0",
+    "@babel/register": "~7.6.0",
+    "babel-loader": "~8.0.6",
+    "chai": "~4.2.0",
+    "cross-env": "~6.0.0",
+    "eslint": "~6.4.0",
+    "eslint-loader": "~3.0.0",
+    "mocha": "~6.2.0",
+    "npm-run-all": "~4.1.5",
+    "nyc": "~14.1.1",
+    "rimraf": "~3.0.0",
+    "sinon": "~7.4.2",
+    "sinon-chai": "~3.3.0",
+    "webpack": "~4.40.2",
+    "webpack-cli": "~3.3.9",
+    "yargs": "~14.1.0"
+  },
+  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead",
+  "dependencies": {
+    "@turf/turf": "^5.1.6",
+    "lodash": "^4.17.15"
+  }
+}
