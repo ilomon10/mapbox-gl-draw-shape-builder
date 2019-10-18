@@ -4,7 +4,6 @@ import _get from 'lodash/get';
 import _concat from 'lodash/concat';
 import _filter from 'lodash/filter';
 import _assign from 'lodash/assign';
-import _unset from 'lodash/unset';
 import * as turf from '@turf/turf';
 import { polygon as turfPolygon } from '@turf/helpers';
 import turfBooleanOverlap from '@turf/boolean-overlap';
@@ -12,7 +11,6 @@ import differenceAtPoint from './utils/differenceAtPoint';
 
 const ShapeBuilder = {
   onSetup: function () {
-    console.log(this);
     this.updateUIClasses({
       mouse: 'add'
     });
@@ -93,7 +91,7 @@ const ShapeBuilder = {
     return args[2](args[1]);
   },
 
-  onStop: function (state, e) {
+  onStop: function (state) {
     if (state.feature.isValid()) {
       this.map.fire('draw.create', {
         features: _concat([state.feature.toGeoJSON()], state.changed)
