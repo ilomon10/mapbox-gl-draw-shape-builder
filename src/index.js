@@ -1,14 +1,35 @@
-import _ from 'lodash';
+import _map from 'lodash/map';
+import _chunk from 'lodash/chunk';
+import _get from 'lodash/get';
+import _concat from 'lodash/concat';
+import _filter from 'lodash/filter';
+import _assign from 'lodash/assign';
+import _unset from 'lodash/unset';
 import * as turf from '@turf/turf';
-import pcf from './utils/polygonCoordinateFixer';
+import { polygon as turfPolygon } from '@turf/helpers';
+import turfBooleanOverlap from '@turf/boolean-overlap';
 import differenceAtPoint from './utils/differenceAtPoint';
 
 const ShapeBuilder = {
   onSetup: function () {
+    console.log(this);
     this.updateUIClasses({
       mouse: 'add'
     });
-    return {};
+    const selected = this.getSelected();
+    const feature = this.newFeature(turfPolygon([]));
+    return {
+      selected,
+      feature,
+      changed: []
+    };
+  },
+
+  onMouseMove: function (state) {
+    if (state.selected && state.selected.length !== 2) {
+      this.changeMode('simple_select');
+      return {};
+    }
   },
 
   onTap: function (state, e) {
@@ -16,55 +37,49 @@ const ShapeBuilder = {
   },
 
   onClick: function (state, e) {
-    if (this.getSelected().length !== 2) {
+    if (state.selected && state.selected.length !== 2) {
       this.changeMode('simple_select');
       return;
     }
-    const coord = [_(e).get('lngLat.lng'), _(e).get('lngLat.lat')];
-    const compFeature = _.map(this.getSelected(), function (v) {
-      const coordinates = pcf(v).coordinates;
-      const properties = _.create(v.properties, { id: v.id });
-      const polygon = turf.polygon(coordinates, properties);
-      return _.create(polygon);
+    const coord = [_get(e, 'lngLat.lng'), _get(e, 'lngLat.lat')];
+    const features = _map(state.selected, function (v) {
+      return _assign({}, v.toGeoJSON());
     });
-    if (!turf.booleanOverlap(...compFeature)) {
+    if (!turfBooleanOverlap(...features)) {
       this.changeMode('simple_select');
       return;
     }
-    const contain = _.chain(compFeature)
-      .filter(function (v) {
-        const point = turf.point(coord);
-        return turf.booleanPointInPolygon(point, v);
-      }).chunk(2).get('[0]').value();
-
+    let contain = _filter(features, function (v) {
+      const point = turf.point(coord);
+      return turf.booleanPointInPolygon(point, v);
+    });
+    contain = _chunk(contain, 2)[0];
     let feature, poly1, poly2;
     switch (contain.length) {
       case 1:
         poly1 = contain[0];
-        poly2 = _.chain(compFeature)
-          .filter(function (v) {
-            return _(v).get('properties.id') !== _(poly1).get('properties.id');
-          }).get('[0]').value();
+        poly2 = _filter(features, function (v) {
+          return v.id !== poly1.id;
+        })[0];
         feature = differenceAtPoint(poly1, poly2, turf.point(coord));
-        this.deleteFeature(poly1.properties.id);
-        let drawPoly1 = _.create(feature);
+        this.deleteFeature(poly1.id);
+        let drawPoly1 = _assign({}, feature);
         drawPoly1 = turf.transformScale(drawPoly1, 1.00000001);
         drawPoly1 = turf.difference(poly1, drawPoly1);
+        drawPoly1.id = poly1.id;
         drawPoly1 = this.newFeature(drawPoly1);
         this.addFeature(drawPoly1);
+        state.changed.push(drawPoly1.toGeoJSON());
         break;
       case 2:
         feature = turf.intersect(...contain);
         break;
       default: break;
     }
-    let drawFeature = _.create(feature);
-    _.unset(drawFeature, 'properties.id');
-    drawFeature = this.newFeature(drawFeature);
-    this.addFeature(drawFeature);
-    this.clearSelectedFeatures();
+    state.feature.setCoordinates(_get(feature, 'geometry.coordinates'));
+    this.addFeature(state.feature);
     this.changeMode('direct_select', {
-      featureId: _(drawFeature).get('id')
+      featureId: state.feature.id
     });
   },
 
@@ -79,6 +94,11 @@ const ShapeBuilder = {
   },
 
   onStop: function (state, e) {
+    if (state.feature.isValid()) {
+      this.map.fire('draw.create', {
+        features: _concat([state.feature.toGeoJSON()], state.changed)
+      });
+    }
     this.updateUIClasses({
       mouse: 'none'
     });

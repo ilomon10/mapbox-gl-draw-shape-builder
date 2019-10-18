@@ -26,7 +26,6 @@ const map = new MapboxGL.Map({
 
 const modes = MapboxGLDraw.modes;
 modes.shape_builder = ShapeBuilder;
-console.dir(modes.shape_builder);
 
 const draw = new MapboxGLDraw({ modes });
 
@@ -37,4 +36,9 @@ map.addControl(draw);
 map.on('load', function () {
   draw.add(data);
 });
-
+map.on('draw.create', function (e) {
+  console.log(e);
+});
+map.on('click', function (e) {
+  console.log(map.queryRenderedFeatures(e.point));
+});
