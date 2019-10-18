@@ -63,4 +63,4 @@ lib
 
 # misc
 .DS_Store
-example/
+# example/

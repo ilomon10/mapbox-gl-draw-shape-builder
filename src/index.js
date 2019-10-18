@@ -1,10 +1,13 @@
 import _ from 'lodash';
 import * as turf from '@turf/turf';
 import pcf from './utils/polygonCoordinateFixer';
+import differenceAtPoint from './utils/differenceAtPoint';
 
 const ShapeBuilder = {
   onSetup: function () {
-    console.log('setup draw');
+    this.updateUIClasses({
+      mouse: 'add'
+    });
     return {};
   },
 
@@ -13,7 +16,6 @@ const ShapeBuilder = {
   },
 
   onClick: function (state, e) {
-    console.log(this.getSelected());
     if (this.getSelected().length !== 2) {
       this.changeMode('simple_select');
       return;
@@ -25,6 +27,10 @@ const ShapeBuilder = {
       const polygon = turf.polygon(coordinates, properties);
       return _.create(polygon);
     });
+    if (!turf.booleanOverlap(...compFeature)) {
+      this.changeMode('simple_select');
+      return;
+    }
     const contain = _.chain(compFeature)
       .filter(function (v) {
         const point = turf.point(coord);
@@ -39,7 +45,7 @@ const ShapeBuilder = {
           .filter(function (v) {
             return _(v).get('properties.id') !== _(poly1).get('properties.id');
           }).get('[0]').value();
-        feature = turf.difference(poly1, poly2);
+        feature = differenceAtPoint(poly1, poly2, turf.point(coord));
         this.deleteFeature(poly1.properties.id);
         let drawPoly1 = _.create(feature);
         drawPoly1 = turf.transformScale(drawPoly1, 1.00000001);
@@ -55,11 +61,11 @@ const ShapeBuilder = {
     let drawFeature = _.create(feature);
     _.unset(drawFeature, 'properties.id');
     drawFeature = this.newFeature(drawFeature);
-    console.log(feature);
-    console.log(drawFeature);
     this.addFeature(drawFeature);
-
-    this.changeMode('simple_select');
+    this.clearSelectedFeatures();
+    this.changeMode('direct_select', {
+      featureId: _(drawFeature).get('id')
+    });
   },
 
   onKeyUp: function (...args) {
@@ -73,6 +79,10 @@ const ShapeBuilder = {
   },
 
   onStop: function (state, e) {
+    this.updateUIClasses({
+      mouse: "none"
+    });
+    this.activateUIButton();
     this.clearSelectedFeatures();
   }
 };
