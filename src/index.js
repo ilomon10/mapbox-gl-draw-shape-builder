@@ -80,7 +80,7 @@ const ShapeBuilder = {
 
   onStop: function (state, e) {
     this.updateUIClasses({
-      mouse: "none"
+      mouse: 'none'
     });
     this.activateUIButton();
     this.clearSelectedFeatures();
