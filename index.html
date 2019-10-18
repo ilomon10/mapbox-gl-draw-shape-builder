@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+    <meta charset='utf-8' />
+    <title>Mapbox GL Draw Assisted Rectangle</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="./dist/index.min.js"></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css'
+        type='text/css' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #shapeBuilderButton {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background-color: white;
+            padding: 10px;
+            z-index: 10;
+            width: auto;
+            height: auto;
+            border-radius: 4px;
+            line-height: 10px;
+            font-size: 0.8em;
+            text-align: center;
+
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <button id="shapeBuilderButton">ShapeBuilder</button>
+    <div id='map'></div>
+    <script>
+        const STYLES_DRAW = [
+
+            {
+                "id": "gl-draw-line",
+                "type": "line",
+                "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+                "layout": {
+                    "line-cap": "round",
+                    "line-join": "round"
+                },
+                "paint": {
+                    "line-color": "#FF0000",
+                    "line-width": 2
+                }
+            },
+            {
+                "id": "gl-draw-polygon-fill",
+                "type": "fill",
+                "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+                "paint": {
+                    "fill-color": "#FF0000",
+                    "fill-outline-color": "#D20C0C",
+                    "fill-opacity": 0.1
+                }
+            },
+
+            {
+                "id": "gl-draw-polygon-stroke-active",
+                "type": "line",
+                "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+                "layout": {
+                    "line-cap": "round",
+                    "line-join": "round"
+                },
+                "paint": {
+                    "line-color": "#D20C0C",
+                    "line-width": 2
+                }
+            },
+
+            {
+                "id": "gl-draw-polygon-and-line-vertex-halo-active",
+                "type": "circle",
+                "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+                "paint": {
+                    "circle-radius": 5,
+                    "circle-color": "#FFF"
+                }
+            },
+
+            {
+                "id": "gl-draw-polygon-and-line-vertex-active",
+                "type": "circle",
+                "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+                "paint": {
+                    "circle-radius": 3,
+                    "circle-color": "#D20C0C",
+                }
+            },
+
+            {
+                "id": "gl-draw-line-static",
+                "type": "line",
+                "filter": ["all", ["==", "$type", "LineString"], ["==", "mode", "static"]],
+                "layout": {
+                    "line-cap": "round",
+                    "line-join": "round"
+                },
+                "paint": {
+                    "line-color": "#FF0000",
+                    "line-width": 3
+                }
+            },
+            {
+                "id": "gl-draw-polygon-fill-static",
+                "type": "fill",
+                "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
+                "paint": {
+                    "fill-color": "#ee0508",
+
+                    "fill-opacity": 0.8
+                }
+            },
+            {
+                "id": "gl-draw-polygon-stroke-static",
+                "type": "line",
+                "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
+                "layout": {
+                    "line-cap": "round",
+                    "line-join": "round"
+                },
+                "paint": {
+                    "line-color": "#c40b0b",
+
+                    "line-width": 2
+                }
+            }
+        ];
+        const button = document.getElementById("shapeBuilderButton");
+        mapboxgl.accessToken = '';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: {
+                "version": 8,
+                "name": "Empty",
+                "metadata": { "mapbox:autocomposite": true },
+                "sources": {},
+                "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+                "layers": [
+                    {
+                        "id": "background",
+                        "type": "background",
+                        "paint": { "background-color": "rgba(0,0,0,0)" }
+                    }
+                ]
+            },
+            center: [-122.419518, 37.772995],
+            zoom: 17,
+            hash: true
+        });
+
+        var modes = MapboxDraw.modes;
+        modes.shape_builder = ShapeBuilder.default;
+
+        var draw = new MapboxDraw({
+            modes: modes,
+            styles: STYLES_DRAW
+        });
+        button.addEventListener('click', () => {
+            console.log(draw);
+            draw.changeMode('shape_builder');
+        })
+        map.addControl(draw);
+        map.on('load', function () {
+        });
+
+        map.on('draw.crate', function (e) {
+            console.log(e);
+        });
+    </script>
+
+</body>
+
+</html>
